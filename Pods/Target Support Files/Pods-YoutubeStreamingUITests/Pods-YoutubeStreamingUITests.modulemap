@@ -1,0 +1,6 @@
+framework module Pods_YoutubeStreamingUITests {
+  umbrella header "Pods-YoutubeStreamingUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}

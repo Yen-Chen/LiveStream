@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import GoogleSignIn
+import Google
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,8 +17,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        
         // Override point for customization after application launch.
+        
+        var error : NSError?
+        GGLContext.sharedInstance().configureWithError(&error)
+        
+        if error != nil{
+            print(error)
+        }
+        
         return true
+        
+    }
+    func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
+        return GIDSignIn.sharedInstance().handle(url,
+                                                 sourceApplication: sourceApplication,
+                                                 annotation: annotation)
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
