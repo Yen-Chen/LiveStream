@@ -46,29 +46,32 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" text="內文" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="be9-9u-Oia">
-                                <rect key="frame" x="40" y="58" width="240" height="40"/>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" text="描述" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="be9-9u-Oia">
+                                <rect key="frame" x="16" y="51" width="288" height="47"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                             <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="標題" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gl3-Az-1eH">
-                                <rect key="frame" x="40" y="20" width="240" height="30"/>
+                                <rect key="frame" x="16" y="13" width="288" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hoy-6s-ieK">
-                                <rect key="frame" x="40" y="106" width="240" height="402"/>
+                                <rect key="frame" x="16" y="106" width="288" height="409"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SBm-us-UAG">
-                                <rect key="frame" x="40" y="516" width="240" height="43"/>
+                                <rect key="frame" x="16" y="523" width="288" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="StartSteaming"/>
+                                <color key="backgroundColor" red="0.13151403019999999" green="0.66955793279999998" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <state key="normal" title="StartSteaming">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
                                 <connections>
                                     <action selector="startStreaming:" destination="PRS-oD-271" eventType="touchUpInside" id="hsS-aS-1bW"/>
                                 </connections>
@@ -78,6 +81,8 @@
                         <viewLayoutGuide key="safeArea" id="iOx-Jg-Apt"/>
                         <connections>
                             <outlet property="indexTextView" destination="be9-9u-Oia" id="ncr-Yz-A6b"/>
+                            <outlet property="streamBtn" destination="SBm-us-UAG" id="dje-hW-fnS"/>
+                            <outlet property="streamView" destination="hoy-6s-ieK" id="l8d-Am-Oz7"/>
                             <outlet property="tittleTextField" destination="gl3-Az-1eH" id="Bxc-b7-mIy"/>
                         </connections>
                     </view>
