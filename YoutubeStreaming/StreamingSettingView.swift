@@ -14,6 +14,7 @@ class StreamingSettingView: UIView {
     @IBOutlet weak var indexTextView: UITextView!
     @IBOutlet weak var streamView: UIView!
     @IBOutlet weak var streamBtn: UIButton!
+    @IBOutlet weak var shareBtn: UIButton!
     /*
     // Only override draw() if you perform custom drawing.
     // An empty implementation adversely affects performance during animation.

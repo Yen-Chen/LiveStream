@@ -55,6 +55,29 @@ class StreamingSettingVC: UIViewController {
         
         self.streamingSettingView.tittleTextField.text = dformatter.string(from: now)
     }
+    
+    @IBAction func shareBtnAction(_ sender: Any) {
+        let url = URL.init(string: "https://www.youtube.com/watch?v="+self.broadcastsId)
+        var active = UIActivityViewController.init(activityItems: [url], applicationActivities: nil)
+        self.present(active, animated: true, completion: nil)
+        
+    }
+    
+    @IBAction func switchBtnAction(_ sender: UIButton) {
+        
+        if sender.tag == 0{
+            rtmpStream.attachCamera(DeviceUtil.device(withPosition: .front))
+            sender.tag = 100
+        }else {
+            rtmpStream.attachCamera(DeviceUtil.device(withPosition: .back))
+            sender.tag = 0
+        }
+        
+        
+        
+    }
+    
+    
     @IBAction func startStreaming(_ sender: Any) {
     
         if !isLive {
@@ -69,7 +92,7 @@ class StreamingSettingVC: UIViewController {
                     if broadcastsId != "-1" && streamId != "-1"{
                         SVProgressHUD.showProgress(0.4, status: "bindBroadcasts")
                         
-                        self.bindBroadcasts(token: auth.accessToken, id: "fNlR31yQbbY", streamId: streamId, callBack: { (success) in
+                        self.bindBroadcasts(token: auth.accessToken, id: broadcastsId, streamId: streamId, callBack: { (success) in
                             
                             if success{
                                 
@@ -208,10 +231,12 @@ class StreamingSettingVC: UIViewController {
             case "live":
                 self.isLive = true
                 self.streamingSettingView.streamBtn.isEnabled = true
+               self.streamingSettingView.shareBtn.isEnabled = true
                 self.streamingSettingView.streamBtn.setTitle("EndStreaming", for: UIControlState.normal)
                 
                 SVProgressHUD.showSuccess(withStatus: "Live...")
                 SVProgressHUD.dismiss(withDelay: 1.0)
+                
             default:
                 SVProgressHUD.showError(withStatus: "\(status)")
                 break
@@ -288,6 +313,14 @@ class StreamingSettingVC: UIViewController {
         
     }
     func creatStreamView(){
+        var avVideoCodecKey = ""
+        
+        if #available(iOS 11.0, *) {
+            avVideoCodecKey = AVVideoCodecType.h264.rawValue
+        }else{
+            avVideoCodecKey = AVVideoCodecH264
+        }
+        
         self.rtmpConnection = RTMPConnection()
         self.rtmpStream = RTMPStream(connection: rtmpConnection)
         rtmpStream.attachAudio(AVCaptureDevice.default(for: AVMediaType.audio)) { error in
@@ -312,6 +345,7 @@ class StreamingSettingVC: UIViewController {
             "height": 1280,
             "bitrate":5000*1024
         ]
+        
         rtmpStream.recorderSettings = [
             AVMediaType.audio: [
                 AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
@@ -320,7 +354,7 @@ class StreamingSettingVC: UIViewController {
                 // AVEncoderBitRateKey: 128000,
             ],
             AVMediaType.video: [
-                AVVideoCodecKey: AVVideoCodecType.h264,
+                AVVideoCodecKey: avVideoCodecKey,
                 AVVideoHeightKey: 0,
                 AVVideoWidthKey: 0,
                 /*

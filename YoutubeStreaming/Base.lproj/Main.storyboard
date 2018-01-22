@@ -66,7 +66,7 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SBm-us-UAG">
-                                <rect key="frame" x="16" y="523" width="288" height="35"/>
+                                <rect key="frame" x="74" y="523" width="171" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.13151403019999999" green="0.66955793279999998" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <state key="normal" title="StartSteaming">
@@ -76,11 +76,33 @@
                                     <action selector="startStreaming:" destination="PRS-oD-271" eventType="touchUpInside" id="hsS-aS-1bW"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZBd-Lo-4G8">
+                                <rect key="frame" x="258" y="525" width="46" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="18"/>
+                                <state key="normal" title="轉">
+                                    <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                </state>
+                                <connections>
+                                    <action selector="switchBtnAction:" destination="PRS-oD-271" eventType="touchUpInside" id="FoI-7d-Uf9"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0wg-k2-yFF">
+                                <rect key="frame" x="16" y="523" width="46" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal" title="Share"/>
+                                <connections>
+                                    <action selector="shareBtnAction:" destination="PRS-oD-271" eventType="touchUpInside" id="iOc-Vt-QLU"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="iOx-Jg-Apt"/>
                         <connections>
                             <outlet property="indexTextView" destination="be9-9u-Oia" id="ncr-Yz-A6b"/>
+                            <outlet property="shareBtn" destination="0wg-k2-yFF" id="Ly0-8S-Ky4"/>
                             <outlet property="streamBtn" destination="SBm-us-UAG" id="dje-hW-fnS"/>
                             <outlet property="streamView" destination="hoy-6s-ieK" id="l8d-Am-Oz7"/>
                             <outlet property="tittleTextField" destination="gl3-Az-1eH" id="Bxc-b7-mIy"/>
