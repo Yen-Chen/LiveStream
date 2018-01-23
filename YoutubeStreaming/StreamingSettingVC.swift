@@ -70,27 +70,24 @@ class StreamingSettingVC: UIViewController{
     
     @IBAction func startStreaming(_ sender: Any) {
 
-        
         func creatStreams(token:String, callBack:@escaping (String)->()){
             let url = URL.init(string: "https://www.googleapis.com/youtube/v3/liveStreams?part=id,cdn,snippet,contentDetails,status&access_token=\(token)")
             let par = StreamsItems()
             par.snippet.title = "StreamTest"
             
-            
-            
-            rtmpStream.captureSettings = [
-                "fps": 30, // FPS
-                "sessionPreset": AVCaptureSession.Preset.medium, // input video width/height
-                "continuousAutofocus": true, // use camera autofocus mode
-                "continuousExposure": false //  use camera exposure mode
-            ]
+//            rtmpStream.videoSettings = [
+//                "width": self.streamingSettingView.qualitySwitch.isOn ? 1080:720,
+//                "height": self.streamingSettingView.qualitySwitch.isOn ? 1920:1280,
+//                "bitrate":self.streamingSettingView.qualitySwitch.isOn ? 8000*1024:5000*1024
+//            ]
             rtmpStream.videoSettings = [
-                "width": self.streamingSettingView.qualitySwitch.isOn ? 1080:720,
-                "height": self.streamingSettingView.qualitySwitch.isOn ? 1920:1280,
+                "width": 720,
+                "height": 1280,
                 "bitrate":5000*1024
             ]
             
-            par.cdn.format = self.streamingSettingView.qualitySwitch.isOn ? "1080p":"720p"
+            par.cdn.resolution = self.streamingSettingView.qualitySwitch.isOn ? "1080p":"720p"
+            par.cdn.frameRate = "30fps"
             par.cdn.ingestionType = "rtmp"
             par.status.streamStatus = "ready"
             
@@ -313,8 +310,12 @@ class StreamingSettingVC: UIViewController{
             print(error)
         }
 
-        
-
+        rtmpStream.captureSettings = [
+            "fps": 30, // FPS
+            "sessionPreset": AVCaptureSession.Preset.medium, // input video width/height
+            "continuousAutofocus": true, // use camera autofocus mode
+            "continuousExposure": false //  use camera exposure mode
+        ]
         rtmpStream.audioSettings = [
             "muted": false, // mute audio
             "bitrate": 32 * 1024,

@@ -47,14 +47,16 @@ class StreamsSnippet: Mappable {
 }
 
 class StreamsCdn: Mappable {
-    var format = ""
+    var resolution = ""
+    var frameRate = ""
     var ingestionType = ""
     
     init() {}
     required init?(map: Map) {
     }
     func mapping(map: Map) {
-        format <- map["format"]
+        resolution <- map["resolution"]
+        frameRate <- map["frameRate"]
         ingestionType <- map["ingestionType"]
     }
 }
