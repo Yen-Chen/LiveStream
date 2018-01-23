@@ -10,6 +10,7 @@ target 'YoutubeStreaming' do
 	pod 'Google/SignIn'
 	pod 'HaishinKit', '~> 0.8.0'
 	pod 'SVProgressHUD'
+    pod 'IQKeyboardManagerSwift'
   # Pods for YoutubeStreaming
 
   target 'YoutubeStreamingTests' do

@@ -9,7 +9,7 @@
 import UIKit
 import GoogleSignIn
 import Google
-
+import IQKeyboardManagerSwift
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -26,7 +26,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if error != nil{
             print(error)
         }
-        
+        IQKeyboardManager.sharedManager().enable = true
+
         return true
         
     }
