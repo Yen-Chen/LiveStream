@@ -29,7 +29,8 @@ class StreamingSettingVC: UIViewController{
     var rtmpStream: RTMPStream!
     var rtmpConnection : RTMPConnection!
     var isLive:Bool = false
-
+    var lfView:LFView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -46,14 +47,27 @@ class StreamingSettingVC: UIViewController{
         let dformatter = DateFormatter()
         dformatter.dateFormat = "yyyy年MM月dd日 HH:mm:ss"
         self.streamingSettingView.tittleTextField.text = dformatter.string(from: now)
-        
+
         self.creatStreamView()
-        
         // Do any additional setup after loading the view.
     }
-
+    
+    override func viewDidLayoutSubviews() {
+        lfView.frame = self.streamingSettingView.streamView.bounds
+    }
+    
+    
+    override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
+        lfView.frame = self.streamingSettingView.streamView.bounds
+        
+//        rtmpStream.videoSettings = [
+//            "width": fromInterfaceOrientation.isPortrait ? 1080:1920,
+//            "height": fromInterfaceOrientation.isPortrait ? 1920:1080,
+//            "bitrate": 5000*1024
+//        ]
+    }
     @IBAction func shareBtnAction(_ sender: Any) {
-        let url = URL.init(string: "https://www.youtube.com/watch?v="+self.broadcastsId)
+        let url = URL.init(string: "https://www.youtube.com/watch?v="+self.broadcastsId)!
         let active = UIActivityViewController.init(activityItems: [url], applicationActivities: nil)
         self.present(active, animated: true, completion: nil)
     }
@@ -69,29 +83,19 @@ class StreamingSettingVC: UIViewController{
     }
     
     @IBAction func startStreaming(_ sender: Any) {
-
+        
+        let domainUrl = "https://www.googleapis.com/youtube/v3"
+        let token = self.authentication.accessToken!
         func creatStreams(token:String, callBack:@escaping (String)->()){
-            let url = URL.init(string: "https://www.googleapis.com/youtube/v3/liveStreams?part=id,cdn,snippet,contentDetails,status&access_token=\(token)")
+            let url = URL.init(string: domainUrl + "/liveStreams?part=id,cdn,snippet,contentDetails,status&access_token=\(token)")!
             let par = StreamsItems()
-            par.snippet.title = "StreamTest"
-            
-//            rtmpStream.videoSettings = [
-//                "width": self.streamingSettingView.qualitySwitch.isOn ? 1080:720,
-//                "height": self.streamingSettingView.qualitySwitch.isOn ? 1920:1280,
-//                "bitrate":self.streamingSettingView.qualitySwitch.isOn ? 8000*1024:5000*1024
-//            ]
-            rtmpStream.videoSettings = [
-                "width": 720,
-                "height": 1280,
-                "bitrate":5000*1024
-            ]
-            
+            par.snippet.title = self.streamingSettingView.tittleTextField.text!
             par.cdn.resolution = self.streamingSettingView.qualitySwitch.isOn ? "1080p":"720p"
             par.cdn.frameRate = "30fps"
             par.cdn.ingestionType = "rtmp"
             par.status.streamStatus = "ready"
             
-            Alamofire.request(url!, method: .post, parameters: par.toJSON(), encoding: JSONEncoding.default).responseObject { (response: DataResponse<StreamsRes>) in
+            Alamofire.request(url, method: .post, parameters: par.toJSON(), encoding: JSONEncoding.default).responseObject { (response: DataResponse<StreamsRes>) in
                 
                 switch response.result {
                 case .success(let value):
@@ -112,9 +116,8 @@ class StreamingSettingVC: UIViewController{
         
         func bindBroadcasts(token:String,id:String,streamId:String , callBack:@escaping (Bool)->()){
             
-            let url = URL.init(string: "https://www.googleapis.com/youtube/v3/liveBroadcasts/bind?id=\(id)&streamId=\(streamId)&part=id,snippet,contentDetails,status&access_token=\(token)")
-
-            Alamofire.request(url!, method: .post).responseObject { (response:DataResponse<BroadcastsRes>) in
+            let url = URL.init(string: domainUrl + "/liveBroadcasts/bind?id=\(id)&streamId=\(streamId)&part=id,snippet,contentDetails,status&access_token=\(token)")!
+            Alamofire.request(url, method: .post).responseObject { (response:DataResponse<BroadcastsRes>) in
                 switch response.result {
                 case .success(let value):
                     
@@ -148,7 +151,6 @@ class StreamingSettingVC: UIViewController{
                     self.streamingSettingView.streamBtn.isEnabled = true
                     self.streamingSettingView.shareBtn.isEnabled = true
                     self.streamingSettingView.streamBtn.setTitle("EndStreaming", for: UIControlState.normal)
-                    
                     self.streamingSettingView.qualitySwitch.isEnabled = false
                     SVProgressHUD.showSuccess(withStatus: "Live...")
                     SVProgressHUD.dismiss(withDelay: 1.0)
@@ -167,7 +169,6 @@ class StreamingSettingVC: UIViewController{
             checkStreamStatus(streamId: streamId, callBack: { (isActive) in
                 if isActive{
                     turnToLive()
-                    self.streamingSettingView.streamBtn.isEnabled = false
                     print("轉換testing.........")
                 }else{
                     checkStream(streamId: streamId)
@@ -176,15 +177,11 @@ class StreamingSettingVC: UIViewController{
         }
         
         func checkStreamStatus(streamId:String ,callBack:@escaping (Bool)->()){
-            
-            let token = self.authentication.accessToken!
-            let url = URL.init(string: "https://www.googleapis.com/youtube/v3/liveStreams?id=\(streamId)&part=id,snippet,status&access_token=\(token)")
-            
-            Alamofire.request(url!, method: .get).responseObject { (response:DataResponse<StreamsReq>) in
+            let url = URL.init(string: domainUrl + "/liveStreams?id=\(streamId)&part=id,snippet,status&access_token=\(token)")!
+            Alamofire.request(url, method: .get).responseObject { (response:DataResponse<StreamsReq>) in
                 switch response.result {
                 case .success(let value):
                     print("Stream狀態：\((value.items.first?.status.streamStatus)!)")
-                    
                     if (value.items.first?.status.streamStatus) == "active"{
                         callBack(true)
                     }else if (value.items.first?.status.streamStatus) == "inactive"{
@@ -201,11 +198,8 @@ class StreamingSettingVC: UIViewController{
         
         func checkBroadcastsStatus(broadcastsId:String,callBack:@escaping (String)->()){
             
-            let token = self.authentication.accessToken!
-            
-            let url = URL.init(string: "https://www.googleapis.com/youtube/v3/liveBroadcasts?part=id,snippet,contentDetails,status&id=\(broadcastsId)&access_token=\(token)")
-            
-            Alamofire.request(url!, method: .get, encoding: JSONEncoding.default).responseObject { (response:DataResponse<Broadcasts>) in
+            let url = URL.init(string: domainUrl + "/liveBroadcasts?part=id,snippet,contentDetails,status&id=\(broadcastsId)&access_token=\(token)")!
+            Alamofire.request(url, method: .get, encoding: JSONEncoding.default).responseObject { (response:DataResponse<Broadcasts>) in
                 switch response.result{
                 case .success(let value):
                     if value.items.count != 0 {
@@ -220,27 +214,22 @@ class StreamingSettingVC: UIViewController{
             }
         }
         func transitionBroadcasts(token:String , id:String ,status:TransitionStatus ){
-            let url = URL.init(string: "https://www.googleapis.com/youtube/v3/liveBroadcasts/transition?id=\(id)&broadcastStatus=\(status)&part=id,snippet,contentDetails,status&access_token=\(token)")
-            Alamofire.request(url!, method: .post)
+            let url = URL.init(string: domainUrl + "/liveBroadcasts/transition?id=\(id)&broadcastStatus=\(status)&part=id,snippet,contentDetails,status&access_token=\(token)")!
+            Alamofire.request(url, method: .post)
         }
         func creatBroadcasts(token:String , callBack:@escaping (String)->()){
-            
-            let url = URL.init(string: "https://www.googleapis.com/youtube/v3/liveBroadcasts?part=id,snippet,contentDetails,status&access_token=\(token)")
+            let url = URL.init(string: domainUrl + "/liveBroadcasts?part=id,snippet,contentDetails,status&access_token=\(token)")!
             
             let par = BroadcastsItems()
             par.snippet.scheduledStartTime = Date().iso8601
-            
             par.snippet.title = self.streamingSettingView.tittleTextField.text!
             par.snippet.description = self.streamingSettingView.indexTextView.text!
             par.status.privacyStatus = "public"
             par.status.lifeCycleStatus = "created"
             
-            
-            Alamofire.request(url!, method: .post, parameters: par.toJSON(), encoding: JSONEncoding.default).responseObject { (response: DataResponse<BroadcastsRes>) in
-                
+            Alamofire.request(url, method: .post, parameters: par.toJSON(), encoding: JSONEncoding.default).responseObject { (response: DataResponse<BroadcastsRes>) in
                 switch response.result {
                 case .success(let value):
-                    
                     if value.id != ""{
                         self.broadcastsId = value.id
                         callBack(value.id)
@@ -255,19 +244,15 @@ class StreamingSettingVC: UIViewController{
         
         if !isLive {
             
-            let auth = authentication!
-            let accessToken = auth.accessToken!
-            print(accessToken)
+            self.streamingSettingView.streamBtn.isEnabled = false
+            self.streamingSettingView.streamBtn.setTitle("Startting Streaming...", for: UIControlState.normal)
             SVProgressHUD.showProgress(0.2, status: "creatBroadcasts&creatStreams")
-            
-            creatBroadcasts(token: accessToken, callBack: { (broadcastsId) in
-                creatStreams(token: accessToken, callBack: { (streamId) in
+            creatBroadcasts(token: self.authentication.accessToken, callBack: { (broadcastsId) in
+                creatStreams(token: self.authentication.accessToken, callBack: { (streamId) in
                     if broadcastsId != "-1" && streamId != "-1"{
                         SVProgressHUD.showProgress(0.4, status: "bindBroadcasts")
-                        
-                        bindBroadcasts(token: auth.accessToken, id: broadcastsId, streamId: streamId, callBack: { (success) in
+                        bindBroadcasts(token: self.authentication.accessToken, id: broadcastsId, streamId: streamId, callBack: { (success) in
                             if success{
-                                //連接rtmp後轉換狀態 -> testing -> wait -> live
                                 SVProgressHUD.showProgress(0.5, status: "bindBroadcasts success")
                                 self.rtmpConnection.connect("rtmp://x.rtmp.youtube.com/live2/\(self.streamName!)")
                                 self.rtmpStream.publish(self.streamName!, type: .live)
@@ -286,20 +271,13 @@ class StreamingSettingVC: UIViewController{
         }else{
             transitionBroadcasts(token: self.authentication.accessToken, id: self.broadcastsId, status: .complete)
             SVProgressHUD.showInfo(withStatus: "結束直播")
+            self.streamingSettingView.shareBtn.isEnabled = false
             self.isLive = false
-            self.streamingSettingView.streamBtn.isEnabled = false
         }
     }
 
     
     func creatStreamView(){
-        var avVideoCodecKey = ""
-        
-        if #available(iOS 11.0, *) {
-            avVideoCodecKey = AVVideoCodecType.h264.rawValue
-        }else{
-            avVideoCodecKey = AVVideoCodecH264
-        }
         
         self.rtmpConnection = RTMPConnection()
         self.rtmpStream = RTMPStream(connection: rtmpConnection)
@@ -312,15 +290,26 @@ class StreamingSettingVC: UIViewController{
 
         rtmpStream.captureSettings = [
             "fps": 30, // FPS
-            "sessionPreset": AVCaptureSession.Preset.medium, // input video width/height
+            "sessionPreset": AVCaptureSession.Preset.hd1920x1080, // input video width/height
             "continuousAutofocus": true, // use camera autofocus mode
-            "continuousExposure": false //  use camera exposure mode
+            "continuousExposure": true //  use camera exposure mode
         ]
         rtmpStream.audioSettings = [
             "muted": false, // mute audio
             "bitrate": 32 * 1024,
             "sampleRate": 44_100
         ]
+        rtmpStream.videoSettings = [
+            "width": 1280,
+            "height": 720,
+            "bitrate":5000*1024
+        ]
+        var avVideoCodecKey = ""
+        if #available(iOS 11.0, *) {
+            avVideoCodecKey = AVVideoCodecType.h264.rawValue
+        }else{
+            avVideoCodecKey = AVVideoCodecH264
+        }
         rtmpStream.recorderSettings = [
             AVMediaType.audio: [
                 AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
@@ -341,8 +330,8 @@ class StreamingSettingVC: UIViewController{
                  */
             ]
         ]
-        let lfView: LFView = LFView(frame: self.streamingSettingView.streamView.bounds)
-        lfView.videoGravity = AVLayerVideoGravity.resizeAspectFill
+        lfView = LFView(frame: self.streamingSettingView.streamView.bounds)
+        lfView.videoGravity = AVLayerVideoGravity.resizeAspect
         lfView.attachStream(rtmpStream)
         self.streamingSettingView.streamView.addSubview(lfView)
     }
