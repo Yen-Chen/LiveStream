@@ -30,6 +30,7 @@ class StreamingSettingVC: UIViewController{
     var rtmpConnection : RTMPConnection!
     var isLive:Bool = false
     var lfView:LFView!
+    var isLock:Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,6 +50,8 @@ class StreamingSettingVC: UIViewController{
         self.streamingSettingView.tittleTextField.text = dformatter.string(from: now)
 
         self.creatStreamView()
+        self.streamingSettingView.streamView.addSubview(lfView)
+        
         // Do any additional setup after loading the view.
     }
     
@@ -56,16 +59,76 @@ class StreamingSettingVC: UIViewController{
         lfView.frame = self.streamingSettingView.streamView.bounds
     }
     
+    override var shouldAutorotate: Bool{
+        return !isLock
+    }
+    
     
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
-        lfView.frame = self.streamingSettingView.streamView.bounds
-        
-//        rtmpStream.videoSettings = [
-//            "width": fromInterfaceOrientation.isPortrait ? 1080:1920,
-//            "height": fromInterfaceOrientation.isPortrait ? 1920:1080,
-//            "bitrate": 5000*1024
-//        ]
+        self.streamingSettingView.streamView.subviews[0].removeFromSuperview()
+        self.creatStreamView()
+        self.streamingSettingView.streamView.addSubview(lfView)
     }
+    
+    func creatStreamView(){
+        
+        self.rtmpConnection = RTMPConnection()
+        self.rtmpStream = RTMPStream(connection: rtmpConnection)
+        rtmpStream.attachAudio(AVCaptureDevice.default(for: AVMediaType.audio)) { error in
+            print(error)
+        }
+        rtmpStream.attachCamera(DeviceUtil.device(withPosition: .back)) { error in
+            print(error)
+        }
+        
+        rtmpStream.captureSettings = [
+            "fps": 30, // FPS
+            "sessionPreset": AVCaptureSession.Preset.hd1280x720, // input video width/height
+            "continuousAutofocus": true, // use camera autofocus mode
+            "continuousExposure": false //  use camera exposure mode
+        ]
+        rtmpStream.audioSettings = [
+            "muted": false, // mute audio
+            "bitrate": 32 * 1024,
+            "sampleRate": 44_100
+        ]
+        rtmpStream.videoSettings = [
+            "width": 720,
+            "height": 1280,
+            "bitrate":5000*1024
+        ]
+        var avVideoCodecKey = ""
+        if #available(iOS 11.0, *) {
+            avVideoCodecKey = AVVideoCodecType.h264.rawValue
+        }else{
+            avVideoCodecKey = AVVideoCodecH264
+        }
+        rtmpStream.recorderSettings = [
+            AVMediaType.audio: [
+                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+                AVSampleRateKey: 0,
+                AVNumberOfChannelsKey: 0,
+                // AVEncoderBitRateKey: 128000,
+            ],
+            AVMediaType.video: [
+                AVVideoCodecKey: avVideoCodecKey,
+                AVVideoHeightKey: 0,
+                AVVideoWidthKey: 0,
+                /*
+                 AVVideoCompressionPropertiesKey: [
+                 AVVideoMaxKeyFrameIntervalDurationKey: 2,
+                 AVVideoProfileLevelKey: AVVideoProfileLevelH264Baseline30,
+                 AVVideoAverageBitRateKey: 512000
+                 ]
+                 */
+            ]
+        ]
+        lfView = LFView(frame: self.streamingSettingView.streamView.bounds)
+        lfView.videoGravity = AVLayerVideoGravity.resizeAspect
+        lfView.attachStream(rtmpStream)
+    }
+    
+    
     @IBAction func shareBtnAction(_ sender: Any) {
         let url = URL.init(string: "https://www.youtube.com/watch?v="+self.broadcastsId)!
         let active = UIActivityViewController.init(activityItems: [url], applicationActivities: nil)
@@ -242,8 +305,22 @@ class StreamingSettingVC: UIViewController{
             }
         }
         
+        
         if !isLive {
-            
+            isLock = true
+            if UIDevice.current.orientation.isPortrait{
+                rtmpStream.videoSettings = [
+                    "width": 720,
+                    "height": 1280,
+                    "bitrate":5000*1024
+                ]
+            }else{
+                rtmpStream.videoSettings = [
+                    "width": 1280,
+                    "height": 720,
+                    "bitrate":5000*1024
+                ]
+            }
             self.streamingSettingView.streamBtn.isEnabled = false
             self.streamingSettingView.streamBtn.setTitle("Startting Streaming...", for: UIControlState.normal)
             SVProgressHUD.showProgress(0.2, status: "creatBroadcasts&creatStreams")
@@ -269,72 +346,18 @@ class StreamingSettingVC: UIViewController{
                 })
             })
         }else{
+            isLock = false
             transitionBroadcasts(token: self.authentication.accessToken, id: self.broadcastsId, status: .complete)
             SVProgressHUD.showInfo(withStatus: "結束直播")
+            self.streamingSettingView.streamBtn.isEnabled = true
+            self.streamingSettingView.streamBtn.setTitle("StartSteaming", for: UIControlState.normal)
             self.streamingSettingView.shareBtn.isEnabled = false
             self.isLive = false
         }
     }
 
     
-    func creatStreamView(){
-        
-        self.rtmpConnection = RTMPConnection()
-        self.rtmpStream = RTMPStream(connection: rtmpConnection)
-        rtmpStream.attachAudio(AVCaptureDevice.default(for: AVMediaType.audio)) { error in
-            print(error)
-        }
-        rtmpStream.attachCamera(DeviceUtil.device(withPosition: .back)) { error in
-            print(error)
-        }
-
-        rtmpStream.captureSettings = [
-            "fps": 30, // FPS
-            "sessionPreset": AVCaptureSession.Preset.hd1920x1080, // input video width/height
-            "continuousAutofocus": true, // use camera autofocus mode
-            "continuousExposure": true //  use camera exposure mode
-        ]
-        rtmpStream.audioSettings = [
-            "muted": false, // mute audio
-            "bitrate": 32 * 1024,
-            "sampleRate": 44_100
-        ]
-        rtmpStream.videoSettings = [
-            "width": 1280,
-            "height": 720,
-            "bitrate":5000*1024
-        ]
-        var avVideoCodecKey = ""
-        if #available(iOS 11.0, *) {
-            avVideoCodecKey = AVVideoCodecType.h264.rawValue
-        }else{
-            avVideoCodecKey = AVVideoCodecH264
-        }
-        rtmpStream.recorderSettings = [
-            AVMediaType.audio: [
-                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-                AVSampleRateKey: 0,
-                AVNumberOfChannelsKey: 0,
-                // AVEncoderBitRateKey: 128000,
-            ],
-            AVMediaType.video: [
-                AVVideoCodecKey: avVideoCodecKey,
-                AVVideoHeightKey: 0,
-                AVVideoWidthKey: 0,
-                /*
-                 AVVideoCompressionPropertiesKey: [
-                 AVVideoMaxKeyFrameIntervalDurationKey: 2,
-                 AVVideoProfileLevelKey: AVVideoProfileLevelH264Baseline30,
-                 AVVideoAverageBitRateKey: 512000
-                 ]
-                 */
-            ]
-        ]
-        lfView = LFView(frame: self.streamingSettingView.streamView.bounds)
-        lfView.videoGravity = AVLayerVideoGravity.resizeAspect
-        lfView.attachStream(rtmpStream)
-        self.streamingSettingView.streamView.addSubview(lfView)
-    }
+   
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -369,3 +392,4 @@ extension Date {
         return Formatter.iso8601.string(from: self)
     }
 }
+

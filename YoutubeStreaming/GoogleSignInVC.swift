@@ -21,6 +21,12 @@ class GoogleSignInVC: UIViewController,GIDSignInUIDelegate,GIDSignInDelegate {
     override func viewDidAppear(_ animated: Bool) {
         GIDSignIn.sharedInstance().uiDelegate = self
         GIDSignIn.sharedInstance().delegate = self
+        
+        
+        let scope = "https://www.googleapis.com/auth/youtube"
+        GIDSignIn.sharedInstance().scopes.append(scope)
+        GIDSignIn.sharedInstance().signIn()
+        
     }
     //Mark: - GoogleSignIn
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
@@ -30,7 +36,7 @@ class GoogleSignInVC: UIViewController,GIDSignInUIDelegate,GIDSignInDelegate {
             self.performSegue(withIdentifier: "gotoStreamingSettingVCID", sender: user.authentication)
         }
     }
-  
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "gotoStreamingSettingVCID"{
             let vc = segue.destination as! StreamingSettingVC

@@ -23,6 +23,7 @@
 		FD6EB6D71FFCF1C30051CFE9 /* BroadcastsDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6EB6D41FFCF1C30051CFE9 /* BroadcastsDetail.swift */; };
 		FD6EB6D81FFCF1C30051CFE9 /* StreamsDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6EB6D51FFCF1C30051CFE9 /* StreamsDetail.swift */; };
 		FD6EB6D91FFCF1C30051CFE9 /* BroadcastsBindDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6EB6D61FFCF1C30051CFE9 /* BroadcastsBindDetail.swift */; };
+		FD85CE47201860A70060AA08 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD85CE46201860A70060AA08 /* NavigationController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +73,7 @@
 		FD6EB6D51FFCF1C30051CFE9 /* StreamsDetail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamsDetail.swift; sourceTree = "<group>"; };
 		FD6EB6D61FFCF1C30051CFE9 /* BroadcastsBindDetail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BroadcastsBindDetail.swift; sourceTree = "<group>"; };
 		FD7E132C99441728E078FAAA /* Pods-YoutubeStreaming.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YoutubeStreaming.debug.xcconfig"; path = "Pods/Target Support Files/Pods-YoutubeStreaming/Pods-YoutubeStreaming.debug.xcconfig"; sourceTree = "<group>"; };
+		FD85CE46201860A70060AA08 /* NavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,6 +155,7 @@
 				FD6EB6D11FFCECA30051CFE9 /* YoutubeStreaming.entitlements */,
 				FD640AE31FFCDAC900D3889D /* AppDelegate.swift */,
 				FD6EB6D21FFCEF4A0051CFE9 /* StreamingSettingView.swift */,
+				FD85CE46201860A70060AA08 /* NavigationController.swift */,
 				FD640B131FFCEA9800D3889D /* StreamingSettingVC.swift */,
 				FD640B111FFCEA8400D3889D /* GoogleSignInVC.swift */,
 				FD640AE71FFCDAC900D3889D /* Main.storyboard */,
@@ -506,6 +509,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FD6EB6D71FFCF1C30051CFE9 /* BroadcastsDetail.swift in Sources */,
+				FD85CE47201860A70060AA08 /* NavigationController.swift in Sources */,
 				FD6EB6D31FFCEF4A0051CFE9 /* StreamingSettingView.swift in Sources */,
 				FD6EB6D81FFCF1C30051CFE9 /* StreamsDetail.swift in Sources */,
 				FD6EB6D91FFCF1C30051CFE9 /* BroadcastsBindDetail.swift in Sources */,
@@ -682,7 +686,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = S8FBP4YLUA;
 				INFOPLIST_FILE = YoutubeStreaming/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "Su-PenLi.YoutubeStreaming";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -700,7 +704,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = S8FBP4YLUA;
 				INFOPLIST_FILE = YoutubeStreaming/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "Su-PenLi.YoutubeStreaming";
 				PRODUCT_NAME = "$(TARGET_NAME)";
