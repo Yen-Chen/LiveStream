@@ -33,14 +33,15 @@ class GoogleSignInVC: UIViewController,GIDSignInUIDelegate,GIDSignInDelegate {
         if error != nil {
             print(error)
         }else{
-            self.performSegue(withIdentifier: "gotoStreamingSettingVCID", sender: user.authentication)
+            self.performSegue(withIdentifier: "gotoStreamingSettingVCID", sender: user)
         }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "gotoStreamingSettingVCID"{
             let vc = segue.destination as! StreamingSettingVC
-            vc.authentication = sender as! GIDAuthentication
+            let user = sender as! GIDGoogleUser
+            vc.user = user
         }
     }
     @IBAction func signInAction(_ sender: Any) {

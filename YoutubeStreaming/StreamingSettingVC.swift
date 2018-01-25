@@ -20,24 +20,29 @@ enum TransitionStatus {
     case live
 }
 enum qualityOption:String{
-    case low = "720P,30FPS"
+    case veryLow = "720P,30FPS"
+    case low = "720P,60FPS"
     case medium = "1080p,30FPS"
     case height = "1080p,60FPS"
+    case ultra = ""
+}
+enum streamState{
+    case end
+    case startting
+    case live
 }
 
 class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewDataSource{
-   
  
     @IBOutlet var streamingSettingView: StreamingSettingView!
-    var authentication:GIDAuthentication!
-    var broadcastsId : String!
-    var streamName:String!
-    var rtmpStream: RTMPStream!
+    var qualitySetting = [qualityOption.veryLow.rawValue,qualityOption.low.rawValue,qualityOption.medium.rawValue,qualityOption.height.rawValue]
+    var user:GIDGoogleUser!
     var rtmpConnection : RTMPConnection!
+    var rtmpStream: RTMPStream!
+    var broadcastsId : String!
     var isLive:Bool = false
-    var lfView:LFView!
-    var isLock:Bool = false
-    var qualitySetting = [qualityOption.low.rawValue,qualityOption.medium.rawValue,qualityOption.height.rawValue]
+    var streamName:String!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -51,18 +56,16 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
         
         self.setUpUI()
         
-        self.streamingSettingView.streamView.addSubview(lfView)
-        
         // Do any additional setup after loading the view.
     }
     
-    
     override func viewDidLayoutSubviews() {
+        let lfView = self.streamingSettingView.streamView.subviews[0] as! LFView
         lfView.frame = self.streamingSettingView.streamView.bounds
     }
     
     override var shouldAutorotate: Bool{
-        return !isLock
+        return !isLive
     }
     
     func setUpUI(){
@@ -79,13 +82,15 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
         self.streamingSettingView.qualityTextField.text = qualityOption.low.rawValue
         self.streamingSettingView.qualityTextField.inputView = pickerView
         
+        // IndexText
+        
+        self.streamingSettingView.indexTextView.text = user.profile.name + "的直播"
         self.creatStreamView()
     }
     
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
         self.streamingSettingView.streamView.subviews[0].removeFromSuperview()
         self.creatStreamView()
-        self.streamingSettingView.streamView.addSubview(lfView)
     }
     
     func creatStreamView(){
@@ -132,18 +137,44 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
                 AVVideoCodecKey: avVideoCodecKey,
                 AVVideoHeightKey: 0,
                 AVVideoWidthKey: 0,
-                /*
-                 AVVideoCompressionPropertiesKey: [
-                 AVVideoMaxKeyFrameIntervalDurationKey: 2,
-                 AVVideoProfileLevelKey: AVVideoProfileLevelH264Baseline30,
-                 AVVideoAverageBitRateKey: 512000
-                 ]
-                 */
             ]
         ]
-        lfView = LFView(frame: self.streamingSettingView.streamView.bounds)
+        let lfView = LFView(frame: self.streamingSettingView.streamView.bounds)
         lfView.videoGravity = AVLayerVideoGravity.resizeAspect
         lfView.attachStream(rtmpStream)
+        self.streamingSettingView.streamView.addSubview(lfView)
+    }
+    
+    func transStreamState(state:streamState){
+        switch state {
+        case .end:
+            self.isLive = false
+            self.streamingSettingView.qualityTextField.isEnabled = true
+            self.streamingSettingView.streamBtn.isEnabled = true
+            self.streamingSettingView.shareBtn.isEnabled = false
+            self.streamingSettingView.indexTextView.isEditable = true
+            self.streamingSettingView.tittleTextField.isEnabled = true
+            self.streamingSettingView.streamBtn.setTitle("StartSteaming", for: UIControlState.normal)
+            SVProgressHUD.showInfo(withStatus: "結束直播")
+        case .live:
+            self.isLive = true
+            self.streamingSettingView.qualityTextField.isEnabled = false
+            self.streamingSettingView.streamBtn.isEnabled = true
+            self.streamingSettingView.shareBtn.isEnabled = true
+            self.streamingSettingView.indexTextView.isEditable = false
+            self.streamingSettingView.tittleTextField.isEnabled = false
+            SVProgressHUD.showSuccess(withStatus: "Live...")
+            SVProgressHUD.dismiss(withDelay: 0.5)
+            self.streamingSettingView.streamBtn.setTitle("EndStreaming", for: UIControlState.normal)
+        case .startting:
+            self.isLive = true
+            self.streamingSettingView.qualityTextField.isEnabled = false
+            self.streamingSettingView.streamBtn.isEnabled = false
+            self.streamingSettingView.shareBtn.isEnabled = false
+            self.streamingSettingView.indexTextView.isEditable = false
+            self.streamingSettingView.tittleTextField.isEnabled = false
+            self.streamingSettingView.streamBtn.setTitle("Startting Streaming...", for: UIControlState.normal)
+        }
     }
     
     //MARK : - PickerView Delegate
@@ -182,7 +213,7 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
     @IBAction func startStreaming(_ sender: Any) {
         
         let domainUrl = "https://www.googleapis.com/youtube/v3"
-        let token = self.authentication.accessToken!
+        let token = self.user.authentication.accessToken!
         func creatStreams(token:String, callBack:@escaping (String)->()){
             let url = URL.init(string: domainUrl + "/liveStreams?part=id,cdn,snippet,contentDetails,status&access_token=\(token)")!
             let par = StreamsItems()
@@ -235,27 +266,21 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
                 switch status {
                 case "ready":
                     SVProgressHUD.showProgress(0.6, status: "Ready...")
-                    transitionBroadcasts(token: self.authentication.accessToken, id: self.broadcastsId, status: .testing)
+                    transitionBroadcasts(token: self.user.authentication.accessToken, id: self.broadcastsId, status: .testing)
                 case "testStarting":
                     SVProgressHUD.showProgress(0.7, status: "testStarting...")
                 case "testing":
                     SVProgressHUD.showProgress(0.8, status: "Testing...")
-                    transitionBroadcasts(token: self.authentication.accessToken, id: self.broadcastsId, status: .live)
+                    transitionBroadcasts(token: self.user.authentication.accessToken, id: self.broadcastsId, status: .live)
                 case "liveStarting":
                     SVProgressHUD.showProgress(0.9, status: "liveStarting...")
                 case "live":
-                    self.isLive = true
-                    self.streamingSettingView.streamBtn.isEnabled = true
-                    self.streamingSettingView.shareBtn.isEnabled = true
-                    self.streamingSettingView.streamBtn.setTitle("EndStreaming", for: UIControlState.normal)
-                    SVProgressHUD.showSuccess(withStatus: "Live...")
-                    SVProgressHUD.dismiss(withDelay: 1.0)
-                    
+                    self.transStreamState(state: .live)
                 default:
                     SVProgressHUD.showError(withStatus: "\(status)")
                     break
                 }
-                if !self.isLive{
+                if status != "live" {
                     turnToLive()
                 }
             }
@@ -340,7 +365,7 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
         
         
         if !isLive {
-            isLock = true
+            transStreamState(state: .startting)
             if UIDevice.current.orientation.isPortrait{
                 rtmpStream.videoSettings = [
                     "width": 720,
@@ -354,14 +379,13 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
                     "bitrate":5000*1024
                 ]
             }
-            self.streamingSettingView.streamBtn.isEnabled = false
-            self.streamingSettingView.streamBtn.setTitle("Startting Streaming...", for: UIControlState.normal)
+            
             SVProgressHUD.showProgress(0.2, status: "creatBroadcasts&creatStreams")
-            creatBroadcasts(token: self.authentication.accessToken, callBack: { (broadcastsId) in
-                creatStreams(token: self.authentication.accessToken, callBack: { (streamId) in
+            creatBroadcasts(token: self.user.authentication.accessToken, callBack: { (broadcastsId) in
+                creatStreams(token: self.user.authentication.accessToken, callBack: { (streamId) in
                     if broadcastsId != "-1" && streamId != "-1"{
                         SVProgressHUD.showProgress(0.4, status: "bindBroadcasts")
-                        bindBroadcasts(token: self.authentication.accessToken, id: broadcastsId, streamId: streamId, callBack: { (success) in
+                        bindBroadcasts(token: self.user.authentication.accessToken, id: broadcastsId, streamId: streamId, callBack: { (success) in
                             if success{
                                 SVProgressHUD.showProgress(0.5, status: "bindBroadcasts success")
                                 self.rtmpConnection.connect("rtmp://x.rtmp.youtube.com/live2/\(self.streamName!)")
@@ -379,16 +403,12 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
                 })
             })
         }else{
-            isLock = false
-            transitionBroadcasts(token: self.authentication.accessToken, id: self.broadcastsId, status: .complete)
-            SVProgressHUD.showInfo(withStatus: "結束直播")
-            self.streamingSettingView.streamBtn.isEnabled = true
-            self.streamingSettingView.streamBtn.setTitle("StartSteaming", for: UIControlState.normal)
-            self.streamingSettingView.shareBtn.isEnabled = false
-            self.isLive = false
+            transitionBroadcasts(token: self.user.authentication.accessToken, id: self.broadcastsId, status: .complete)
+            self.transStreamState(state: .end)
         }
     }
 
+   
     
    
     
