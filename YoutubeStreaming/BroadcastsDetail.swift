@@ -23,6 +23,7 @@ class Broadcasts: Mappable{
 class BroadcastsItems: Mappable {
     var snippet = BroadcastsSnippet()
     var status = BroadcastsStatus()
+    var contentDetails = BroadcastsContentDetails()
     
     init() {}
     required init?(map: Map) {
@@ -30,6 +31,7 @@ class BroadcastsItems: Mappable {
     func mapping(map: Map) {
         snippet <- map["snippet"]
         status <- map["status"]
+        contentDetails <- map["contentDetails"]
     }
 }
 
@@ -57,6 +59,17 @@ class BroadcastsStatus: Mappable {
     func mapping(map: Map) {
         privacyStatus <- map["privacyStatus"]
         lifeCycleStatus <- map["lifeCycleStatus"]
+    }
+}
+
+class BroadcastsContentDetails: Mappable {
+    var enableLowLatency : Bool!
+    
+    init() {}
+    required init?(map: Map) {
+    }
+    func mapping(map: Map) {
+        enableLowLatency <- map["enableLowLatency"]
     }
 }
 
