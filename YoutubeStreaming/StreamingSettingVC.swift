@@ -39,9 +39,6 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
         
         self.setUpUI()
         
-        
-       
-
         // Do any additional setup after loading the view.
     }
     
@@ -96,6 +93,7 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
         
         self.rtmpConnection = RTMPConnection()
         self.rtmpStream = RTMPStream(connection: rtmpConnection)
+                
         rtmpStream.attachAudio(AVCaptureDevice.default(for: AVMediaType.audio)) { error in
             print(error)
         }
@@ -105,15 +103,16 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
         
         rtmpStream.captureSettings = [
             "fps": 30, // FPS
-            "sessionPreset": AVCaptureSession.Preset.hd1280x720, // input video width/height
+            "sessionPreset": AVCaptureSession.Preset.hd1920x1080, // input video width/height
             "continuousAutofocus": true, // use camera autofocus mode
-            "continuousExposure": false //  use camera exposure mode
+            "continuousExposure": true //  use camera exposure mode
         ]
         rtmpStream.audioSettings = [
             "muted": false, // mute audio
             "bitrate": 32 * 1024,
             "sampleRate": 44_100
         ]
+    
         rtmpStream.videoSettings = [
             "width": 720,
             "height": 1280,
@@ -396,8 +395,6 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
                         })
                     }else{
                         SVProgressHUD.showInfo(withStatus: "Fail creatBroadcasts&creatStreams")
-                        GIDSignIn.sharedInstance().scopes = []
-                        GIDSignIn.sharedInstance().signOut()
                     }
                 })
             })

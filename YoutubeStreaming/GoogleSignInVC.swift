@@ -18,11 +18,12 @@ class GoogleSignInVC: UIViewController,GIDSignInUIDelegate,GIDSignInDelegate {
         GIDSignIn.sharedInstance().uiDelegate = self
         GIDSignIn.sharedInstance().delegate = self
         
-        SVProgressHUD.show(withStatus: "AutoLogin")
-        let scope = "https://www.googleapis.com/auth/youtube"
-        GIDSignIn.sharedInstance().scopes.append(scope)
-        GIDSignIn.sharedInstance().signIn()
-        
+         if GIDSignIn.sharedInstance().clientID != nil {
+            SVProgressHUD.show(withStatus: "AutoLogin")
+            let scope = "https://www.googleapis.com/auth/youtube"
+            GIDSignIn.sharedInstance().scopes.append(scope)
+            GIDSignIn.sharedInstance().signIn()
+        }
        
         // Do any additional setup after loading the view.
     }
