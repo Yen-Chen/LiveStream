@@ -20,9 +20,9 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fOg-sx-ddw">
-                                <rect key="frame" x="191.66666666666666" y="385" width="31" height="30"/>
+                                <rect key="frame" x="174.33333333333334" y="385" width="66" height="30"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <state key="normal" title="登入"/>
+                                <state key="normal" title="登入/登出"/>
                                 <connections>
                                     <action selector="signInAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="NYr-ii-8N3"/>
                                 </connections>

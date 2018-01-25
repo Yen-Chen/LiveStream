@@ -8,32 +8,31 @@
 
 import UIKit
 import GoogleSignIn
+import SVProgressHUD
 
 class GoogleSignInVC: UIViewController,GIDSignInUIDelegate,GIDSignInDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        // Do any additional setup after loading the view.
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
+        self.navigationController?.navigationBar.isHidden = true
         GIDSignIn.sharedInstance().uiDelegate = self
         GIDSignIn.sharedInstance().delegate = self
         
-        
+        SVProgressHUD.show(withStatus: "AutoLogin")
         let scope = "https://www.googleapis.com/auth/youtube"
         GIDSignIn.sharedInstance().scopes.append(scope)
         GIDSignIn.sharedInstance().signIn()
-        
+        // Do any additional setup after loading the view.
     }
+
     //Mark: - GoogleSignIn
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
         if error != nil {
             print(error)
         }else{
             self.performSegue(withIdentifier: "gotoStreamingSettingVCID", sender: user)
+            SVProgressHUD.dismiss()
         }
     }
     
@@ -45,10 +44,10 @@ class GoogleSignInVC: UIViewController,GIDSignInUIDelegate,GIDSignInDelegate {
         }
     }
     @IBAction func signInAction(_ sender: Any) {
-//        if GIDSignIn.sharedInstance().currentUser != nil {
-//            GIDSignIn.sharedInstance().scopes = []
-//            GIDSignIn.sharedInstance().signOut()
-//        }
+        if GIDSignIn.sharedInstance().currentUser != nil {
+            GIDSignIn.sharedInstance().scopes = []
+            GIDSignIn.sharedInstance().signOut()
+        }
         
         let scope = "https://www.googleapis.com/auth/youtube"
         GIDSignIn.sharedInstance().scopes.append(scope)
