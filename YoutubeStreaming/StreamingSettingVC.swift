@@ -14,28 +14,11 @@ import SVProgressHUD
 import AVFoundation
 import HaishinKit
 
-enum TransitionStatus {
-    case complete
-    case testing
-    case live
-}
-enum qualityOption:String{
-    case veryLow = "720P,30FPS"
-    case low = "720P,60FPS"
-    case medium = "1080p,30FPS"
-    case height = "1080p,60FPS"
-    case ultra = ""
-}
-enum streamState{
-    case end
-    case startting
-    case live
-}
 
 class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewDataSource{
  
     @IBOutlet var streamingSettingView: StreamingSettingView!
-    var qualitySetting = [qualityOption.veryLow.rawValue,qualityOption.low.rawValue,qualityOption.medium.rawValue,qualityOption.height.rawValue]
+    var qualitySetting:[String]!
     var user:GIDGoogleUser!
     var rtmpConnection : RTMPConnection!
     var rtmpStream: RTMPStream!
@@ -56,6 +39,9 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
         
         self.setUpUI()
         
+        
+       
+
         // Do any additional setup after loading the view.
     }
     
@@ -85,6 +71,19 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
         // IndexText
         
         self.streamingSettingView.indexTextView.text = user.profile.name + "的直播"
+        
+        // QualitySetting
+        
+        let modelName = UIDevice.current.modelName
+        let code = modelName.index(modelName.startIndex, offsetBy: 8)
+        
+        if modelName.substring(to: code) == "iPhone 5"{
+            qualitySetting = [qualityOption.veryLow.rawValue,qualityOption.medium.rawValue]
+        }else{
+            qualitySetting = [qualityOption.veryLow.rawValue,qualityOption.low.rawValue,qualityOption.medium.rawValue,qualityOption.height.rawValue]
+        }
+        
+        // 
         self.creatStreamView()
     }
     
@@ -218,8 +217,8 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
             let url = URL.init(string: domainUrl + "/liveStreams?part=id,cdn,snippet,contentDetails,status&access_token=\(token)")!
             let par = StreamsItems()
             par.snippet.title = self.streamingSettingView.tittleTextField.text!
-            par.cdn.resolution = "720p"
-            par.cdn.frameRate = "30fps"
+            par.cdn.resolution = "variable"
+            par.cdn.frameRate = "variable"
             par.cdn.ingestionType = "rtmp"
             par.status.streamStatus = "ready"
             
@@ -408,25 +407,29 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
         }
     }
 
-   
-    
-   
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        SVProgressHUD.show(withStatus: "didReceiveMemoryWarning")
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    enum TransitionStatus {
+        case complete
+        case testing
+        case live
     }
-    */
+    enum qualityOption:String{
+        case veryLow = "720P,30FPS"
+        case low = "720P,60FPS"
+        case medium = "1080p,30FPS"
+        case height = "1080p,60FPS"
+        case veryHeight = "2k,30FPS"
+        case ultra = "4k,30FPS"
+    }
+    enum streamState{
+        case end
+        case startting
+        case live
+    }
 
 }
 

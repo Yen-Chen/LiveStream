@@ -14,7 +14,6 @@ class GoogleSignInVC: UIViewController,GIDSignInUIDelegate,GIDSignInDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.navigationController?.navigationBar.isHidden = true
         GIDSignIn.sharedInstance().uiDelegate = self
         GIDSignIn.sharedInstance().delegate = self
@@ -23,6 +22,8 @@ class GoogleSignInVC: UIViewController,GIDSignInUIDelegate,GIDSignInDelegate {
         let scope = "https://www.googleapis.com/auth/youtube"
         GIDSignIn.sharedInstance().scopes.append(scope)
         GIDSignIn.sharedInstance().signIn()
+        
+       
         // Do any additional setup after loading the view.
     }
 
