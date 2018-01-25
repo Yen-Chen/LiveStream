@@ -19,8 +19,14 @@ enum TransitionStatus {
     case testing
     case live
 }
+enum qualityOption:String{
+    case low = "720P,30FPS"
+    case medium = "1080p,30FPS"
+    case height = "1080p,60FPS"
+}
 
-class StreamingSettingVC: UIViewController{
+class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewDataSource{
+   
  
     @IBOutlet var streamingSettingView: StreamingSettingView!
     var authentication:GIDAuthentication!
@@ -31,7 +37,7 @@ class StreamingSettingVC: UIViewController{
     var isLive:Bool = false
     var lfView:LFView!
     var isLock:Bool = false
-    
+    var qualitySetting = [qualityOption.low.rawValue,qualityOption.medium.rawValue,qualityOption.height.rawValue]
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -43,17 +49,13 @@ class StreamingSettingVC: UIViewController{
         } catch {
         }
         
-        let now = Date()
-        // 创建一个日期格式器
-        let dformatter = DateFormatter()
-        dformatter.dateFormat = "yyyy年MM月dd日 HH:mm:ss"
-        self.streamingSettingView.tittleTextField.text = dformatter.string(from: now)
-
-        self.creatStreamView()
+        self.setUpUI()
+        
         self.streamingSettingView.streamView.addSubview(lfView)
         
         // Do any additional setup after loading the view.
     }
+    
     
     override func viewDidLayoutSubviews() {
         lfView.frame = self.streamingSettingView.streamView.bounds
@@ -63,6 +65,22 @@ class StreamingSettingVC: UIViewController{
         return !isLock
     }
     
+    func setUpUI(){
+        // Title
+        let now = Date()
+        let dformatter = DateFormatter()
+        dformatter.dateFormat = "yyyy年MM月dd日 HH:mm:ss"
+        self.streamingSettingView.tittleTextField.text = dformatter.string(from: now)
+        
+        // Quality Setting
+        let pickerView = UIPickerView.init()
+        pickerView.delegate = self
+        pickerView.dataSource = self
+        self.streamingSettingView.qualityTextField.text = qualityOption.low.rawValue
+        self.streamingSettingView.qualityTextField.inputView = pickerView
+        
+        self.creatStreamView()
+    }
     
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
         self.streamingSettingView.streamView.subviews[0].removeFromSuperview()
@@ -128,6 +146,22 @@ class StreamingSettingVC: UIViewController{
         lfView.attachStream(rtmpStream)
     }
     
+    //MARK : - PickerView Delegate
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return qualitySetting.count
+    }
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return qualitySetting[row]
+    }
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.streamingSettingView.qualityTextField.text = qualitySetting[row]
+    }
+    
+    //MARK : - IBAction
     
     @IBAction func shareBtnAction(_ sender: Any) {
         let url = URL.init(string: "https://www.youtube.com/watch?v="+self.broadcastsId)!
@@ -153,7 +187,7 @@ class StreamingSettingVC: UIViewController{
             let url = URL.init(string: domainUrl + "/liveStreams?part=id,cdn,snippet,contentDetails,status&access_token=\(token)")!
             let par = StreamsItems()
             par.snippet.title = self.streamingSettingView.tittleTextField.text!
-            par.cdn.resolution = self.streamingSettingView.qualitySwitch.isOn ? "1080p":"720p"
+            par.cdn.resolution = "720p"
             par.cdn.frameRate = "30fps"
             par.cdn.ingestionType = "rtmp"
             par.status.streamStatus = "ready"
@@ -214,7 +248,6 @@ class StreamingSettingVC: UIViewController{
                     self.streamingSettingView.streamBtn.isEnabled = true
                     self.streamingSettingView.shareBtn.isEnabled = true
                     self.streamingSettingView.streamBtn.setTitle("EndStreaming", for: UIControlState.normal)
-                    self.streamingSettingView.qualitySwitch.isEnabled = false
                     SVProgressHUD.showSuccess(withStatus: "Live...")
                     SVProgressHUD.dismiss(withDelay: 1.0)
                     
