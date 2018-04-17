@@ -24,7 +24,7 @@ class StreamingSettingView: UIView {
         self.streamBtn.layer.cornerRadius = 5
         self.turnBtn.layer.cornerRadius = 5
     }
-    
+     
     /*
     // Only override draw() if you perform custom drawing.
     // An empty implementation adversely affects performance during animation.

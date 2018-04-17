@@ -13,7 +13,7 @@ import GoogleSignIn
 import SVProgressHUD
 import AVFoundation
 import HaishinKit
-
+import VideoToolbox
 
 class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewDataSource{
  
@@ -29,11 +29,12 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        let session: AVAudioSession = AVAudioSession.sharedInstance()
         do {
-            try AVAudioSession.sharedInstance().setPreferredSampleRate(44_100)
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayAndRecord)
-            try AVAudioSession.sharedInstance().setMode(AVAudioSessionModeDefault)
-            try AVAudioSession.sharedInstance().setActive(true)
+            try session.setPreferredSampleRate(44_100)
+            try session.setCategory(AVAudioSessionCategoryPlayAndRecord, with: .allowBluetooth)
+            try session.setMode(AVAudioSessionModeDefault)
+            try session.setActive(true)
         } catch {
         }
         
@@ -79,8 +80,7 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
         }else{
             qualitySetting = [qualityOption.veryLow.rawValue,qualityOption.low.rawValue,qualityOption.medium.rawValue,qualityOption.height.rawValue]
         }
-        
-        // 
+         
         self.creatStreamView()
     }
     
@@ -100,10 +100,10 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
         rtmpStream.attachCamera(DeviceUtil.device(withPosition: .back)) { error in
             print(error)
         }
-        
+     
         rtmpStream.captureSettings = [
-            "fps": 30, // FPS
-            "sessionPreset": AVCaptureSession.Preset.hd1920x1080, // input video width/height
+            "fps": 60, // FPS
+            "sessionPreset": AVCaptureSession.Preset.hd1280x720, // input video width/height
             "continuousAutofocus": true, // use camera autofocus mode
             "continuousExposure": true //  use camera exposure mode
         ]
@@ -113,11 +113,11 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
             "sampleRate": 44_100
         ]
     
-        rtmpStream.videoSettings = [
-            "width": 720,
-            "height": 1280,
-            "bitrate":5000*1024
-        ]
+//        rtmpStream.videoSettings = [
+//            "width": 720,
+//            "height": 1280,
+//            "bitrate":5000*1024
+//        ]
         var avVideoCodecKey = ""
         if #available(iOS 11.0, *) {
             avVideoCodecKey = AVVideoCodecType.h264.rawValue
@@ -134,13 +134,17 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
             AVMediaType.video: [
                 AVVideoCodecKey: avVideoCodecKey,
                 AVVideoHeightKey: 0,
-                AVVideoWidthKey: 0,
+                AVVideoWidthKey: 0
             ]
         ]
+        
+        rtmpStream.attachAudio(AVCaptureDevice.default(for: AVMediaType.audio), automaticallyConfiguresApplicationAudioSession: false)
+
         let lfView = LFView(frame: self.streamingSettingView.streamView.bounds)
         lfView.videoGravity = AVLayerVideoGravity.resizeAspect
         lfView.attachStream(rtmpStream)
         self.streamingSettingView.streamView.addSubview(lfView)
+  
     }
     
     func transStreamState(state:streamState){
@@ -345,6 +349,7 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
             par.snippet.description = self.streamingSettingView.indexTextView.text!
             par.status.privacyStatus = "public"
             par.status.lifeCycleStatus = "created"
+            par.contentDetails.enableLowLatency = false
             
             Alamofire.request(url, method: .post, parameters: par.toJSON(), encoding: JSONEncoding.default).responseObject { (response: DataResponse<BroadcastsRes>) in
                 switch response.result {
@@ -361,20 +366,21 @@ class StreamingSettingVC: UIViewController,UIPickerViewDelegate,UIPickerViewData
             }
         }
         
-        
         if !isLive {
             transStreamState(state: .startting)
             if UIDevice.current.orientation.isPortrait{
                 rtmpStream.videoSettings = [
                     "width": 720,
                     "height": 1280,
-                    "bitrate":5000*1024
+                    "bitrate":3000*1024,
+                    "profileLevel": kVTProfileLevel_H264_Baseline_3_1
                 ]
             }else{
                 rtmpStream.videoSettings = [
                     "width": 1280,
                     "height": 720,
-                    "bitrate":5000*1024
+                    "bitrate":3000*1024,
+                    "profileLevel": kVTProfileLevel_H264_Baseline_3_1
                 ]
             }
             

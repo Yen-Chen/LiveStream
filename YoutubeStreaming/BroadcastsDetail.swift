@@ -11,7 +11,7 @@ import ObjectMapper
 
 class Broadcasts: Mappable{
     var items = [BroadcastsItems]()
-    
+     
     init() {}
     required init?(map: Map) {
     }

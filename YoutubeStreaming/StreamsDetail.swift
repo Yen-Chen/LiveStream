@@ -11,7 +11,7 @@ import ObjectMapper
 
 class StreamsReq: Mappable{
     var items = [StreamsItems]()
-    
+     
     init() {}
     required init?(map: Map) {
     }

@@ -33,6 +33,9 @@ class GoogleSignInVC: UIViewController,GIDSignInUIDelegate,GIDSignInDelegate {
         if error != nil {
             print(error)
         }else{
+            print("=====================")
+            print(user.authentication.accessToken)
+            print("=====================")
             self.performSegue(withIdentifier: "gotoStreamingSettingVCID", sender: user)
             SVProgressHUD.dismiss()
         }

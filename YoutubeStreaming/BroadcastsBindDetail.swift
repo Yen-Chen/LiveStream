@@ -13,7 +13,6 @@ class BindReq: Mappable {
     var id = ""
     var part = "id,snippet,contentDetails,status"
     var streamId = ""
-//    var access_token = ""
     
     init() {}
     required init?(map: Map) {
@@ -22,6 +21,5 @@ class BindReq: Mappable {
         id <- map["id"]
         part <- map["part"]
         streamId <- map["streamId"]
-//        access_token <- map["access_token"]
     }
 }
