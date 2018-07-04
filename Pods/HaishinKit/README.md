@@ -2,7 +2,7 @@
 [![Platform](https://img.shields.io/cocoapods/p/HaishinKit.svg?style=flat)](http://cocoapods.org/pods/HaishinKit)
 ![Language](https://img.shields.io/badge/language-Swift%204.0-orange.svg)
 [![CocoaPods](https://img.shields.io/cocoapods/v/HaishinKit.svg?style=flat)](http://cocoapods.org/pods/HaishinKit)
-[![GitHub license](https://img.shields.io/badge/license-New%20BSD-blue.svg)](https://raw.githubusercontent.com/shogo4405/HaishinKit.swift/master/LICENSE.md)
+[![GitHub license](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://raw.githubusercontent.com/shogo4405/HaishinKit.swift/master/LICENSE.md)
 
 * Camera and Microphone streaming library via RTMP, HLS for iOS, macOS, tvOS.
 * Issuesの言語は、英語か、日本語でお願いします！
@@ -28,6 +28,14 @@
 ### HLS
 - [x] HTTPService
 - [x] HLS Publish
+
+### Rendering
+|-|LFView|GLLFView|
+|-|:---:|:---:|
+|Engine|AVCaptureVideoPreviewLayer|OpenGL ES|
+|Publish|○|○|
+|Playback|×|○|
+|VIsualEffect|×|○|
 
 ### Others
 - [x] _Support tvOS 10.2+  (Technical Preview)_
@@ -58,7 +66,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 
 def import_pods
-    pod 'HaishinKit', '~> 0.8.0'
+    pod 'HaishinKit', '~> 0.8.8'
 end
 
 target 'Your Target'  do
@@ -68,29 +76,29 @@ end
 ```
 ### Carthage
 ```
-github "shogo4405/HaishinKit.swift" ~> 0.8.0
+github "shogo4405/HaishinKit.swift" ~> 0.8.8
 ```
 
 ## License
-New BSD
+BSD-3-Clause
 
 ## Donation
 Bitcoin
 ```txt
-1CWA9muX36QKBdJiRQJGpu2HvchfEpJbWr
+17N3qWCKjwJrWrDuyeHaqWkZYnJqX7igXN
 ```
 
 ## Prerequisites
 Make sure you setup and activate your AVAudioSession.
 ```swift
 import AVFoundation
-
+let session: AVAudioSession = AVAudioSession.sharedInstance()
 do {
-   try AVAudioSession.sharedInstance().setPreferredSampleRate(44_100)
-   try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayAndRecord)
-   try AVAudioSession.sharedInstance().setMode(AVAudioSessionModeDefault)
-   try AVAudioSession.sharedInstance().setActive(true)
-   } catch {
+    try session.setPreferredSampleRate(44_100)
+    try session.setCategory(AVAudioSessionCategoryPlayAndRecord, with: .allowBluetooth)
+    try session.setMode(AVAudioSessionModeDefault)
+    try session.setActive(true)
+} catch {
 }
 ```
 ## RTMP Usage
@@ -123,11 +131,12 @@ let sampleRate:Double = 44_100
 
 // see: #58
 #if(iOS)
+let session: AVAudioSession = AVAudioSession.sharedInstance()
 do {
-    try AVAudioSession.sharedInstance().setPreferredSampleRate(sampleRate)
-    try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayAndRecord)
-    try AVAudioSession.sharedInstance().setMode(AVAudioSessionModeDefault)
-    try AVAudioSession.sharedInstance().setActive(true)
+    try session.setPreferredSampleRate(44_100)
+    try session.setCategory(AVAudioSessionCategoryPlayAndRecord, with: .allowBluetooth)
+    try session.setMode(AVAudioSessionModeDefault)
+    try session.setActive(true)
 } catch {
 }
 #endif

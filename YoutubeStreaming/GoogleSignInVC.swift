@@ -11,20 +11,33 @@ import GoogleSignIn
 import SVProgressHUD
 
 class GoogleSignInVC: UIViewController,GIDSignInUIDelegate,GIDSignInDelegate {
-
+    
+    var userDefault = UserDefaults()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
         GIDSignIn.sharedInstance().uiDelegate = self
         GIDSignIn.sharedInstance().delegate = self
+        userDefault = UserDefaults.standard
         
-         if GIDSignIn.sharedInstance().clientID != nil {
+        
+        if userDefault.object(forKey: "userID") == nil{
+            let scope = "https://www.googleapis.com/auth/youtube"
+            GIDSignIn.sharedInstance().scopes.append(scope)
+            GIDSignIn.sharedInstance().signIn()
+            userDefault.set(GIDSignIn.sharedInstance().clientID, forKey: "userID")
+            userDefault.synchronize()
+        }else{
             SVProgressHUD.show(withStatus: "AutoLogin")
             let scope = "https://www.googleapis.com/auth/youtube"
             GIDSignIn.sharedInstance().scopes.append(scope)
             GIDSignIn.sharedInstance().signIn()
         }
-       
+//        if GIDSignIn.sharedInstance().clientID != nil {
+//
+//
+//        }
         // Do any additional setup after loading the view.
     }
 
@@ -57,6 +70,8 @@ class GoogleSignInVC: UIViewController,GIDSignInUIDelegate,GIDSignInDelegate {
         let scope = "https://www.googleapis.com/auth/youtube"
         GIDSignIn.sharedInstance().scopes.append(scope)
         GIDSignIn.sharedInstance().signIn()
+        
+        userDefault.removeObject(forKey: "userID")
     }
     
     override func didReceiveMemoryWarning() {

@@ -222,8 +222,6 @@
 				FD640AF01FFCDACA00D3889D /* Sources */,
 				FD640AF11FFCDACA00D3889D /* Frameworks */,
 				FD640AF21FFCDACA00D3889D /* Resources */,
-				DBA942336FA56C55A37A7AF2 /* [CP] Embed Pods Frameworks */,
-				1EB4DBA49D9890BE15629CFD /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -243,8 +241,6 @@
 				FD640AFB1FFCDACA00D3889D /* Sources */,
 				FD640AFC1FFCDACA00D3889D /* Frameworks */,
 				FD640AFD1FFCDACA00D3889D /* Resources */,
-				946DDE34AAD4AD32D1C5193B /* [CP] Embed Pods Frameworks */,
-				C6B5A646AD3D53C8F0EB72BB /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -336,21 +332,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1EB4DBA49D9890BE15629CFD /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-YoutubeStreamingTests/Pods-YoutubeStreamingTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		26320B3C2A747CE0BAC64C89 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -380,7 +361,7 @@
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -423,21 +404,6 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-YoutubeStreaming/Pods-YoutubeStreaming-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		946DDE34AAD4AD32D1C5193B /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-YoutubeStreamingUITests/Pods-YoutubeStreamingUITests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		B10FECB95CECB25B4F2FC651 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -454,36 +420,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C6B5A646AD3D53C8F0EB72BB /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-YoutubeStreamingUITests/Pods-YoutubeStreamingUITests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		DBA942336FA56C55A37A7AF2 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-YoutubeStreamingTests/Pods-YoutubeStreamingTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		DD3E142BFEEA28BDA78C93D5 /* [CP] Check Pods Manifest.lock */ = {
@@ -689,7 +625,7 @@
 				CODE_SIGN_ENTITLEMENTS = YoutubeStreaming/YoutubeStreaming.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 352B3NNBK2;
+				DEVELOPMENT_TEAM = S8FBP4YLUA;
 				INFOPLIST_FILE = YoutubeStreaming/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -709,7 +645,7 @@
 				CODE_SIGN_ENTITLEMENTS = YoutubeStreaming/YoutubeStreaming.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 352B3NNBK2;
+				DEVELOPMENT_TEAM = S8FBP4YLUA;
 				INFOPLIST_FILE = YoutubeStreaming/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

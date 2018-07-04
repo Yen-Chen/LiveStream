@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if error != nil{
             print(error)
         }
-        IQKeyboardManager.sharedManager().enable = true
+        IQKeyboardManager.shared.enable = true
 
         return true
         
